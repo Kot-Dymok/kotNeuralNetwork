@@ -1,0 +1,38 @@
+name:                kotNeuralNetwork
+version:             0.0.1
+-- synopsis:
+-- description:
+homepage:            https://github.com/Kot-Dymok/kotNeuralNetwork#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Dmitry Sosnov
+maintainer:          kot.dymok@gmail.com
+copyright:           © 2017 Dmitry Sosnov
+category:            Math
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     KotNeuralNetwork
+                     , KotNeuralNetwork.Internal
+                     , KotNeuralNetwork.ActivationFunctions
+  build-depends:       base >= 4.7 && < 5
+  default-language:    Haskell2010
+
+test-suite hsNeuralNetwork-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+-- 'src' directory is for testing hidden (not exported) functions
+  main-is:             Spec.hs
+  build-depends:       base
+                     , kotNeuralNetwork
+                     , hspec
+                     , QuickCheck
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/Kot-Dymok/kotNeuralNetwork
