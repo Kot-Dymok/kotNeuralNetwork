@@ -6,4 +6,7 @@ module KotNeuralNetwork
 -- for testing see https://stackoverflow.com/questions/14379185/function-privacy-and-unit-testing-haskell
 
 -- import KotNeuralNetwork.ActivationFunctions ()
-import KotNeuralNetwork.Internal ()
+import KotNeuralNetwork.Internal
+import qualified KotNeuralNetwork.Feedforward
+
+type KotFeedforwardNeuralNetwork = KotNeuralNetwork.Feedforward.NeuralNetwork
