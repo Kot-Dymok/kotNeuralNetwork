@@ -2,6 +2,7 @@ module KotNeuralNetwork.Feedforward where
 
 import KotNeuralNetwork.Internal
 import qualified KotNeuralNetwork.ActivationFunctions as AF
+import Data.Binary
 
 data Perceptron = Perceptron {
   weigths  :: [Weigth],
@@ -22,6 +23,12 @@ instance Neural Perceptron where
       wCorrections = flip map dnet_dw $ (*) dE_dnet
       w' = zipWith (-) w $ map (r *) wCorrections
 
+instance Binary Perceptron where
+  put (Perceptron w a) = put w >> put a
+  get = do w <- get
+           a <- get
+           return (Perceptron w a)
+
 data Layer = Layer [Perceptron]
   deriving (Show, Eq)
 
@@ -35,6 +42,10 @@ instance Neural Layer where
       learnPerceptron (p, c) = learn p inputs [c] r
       (p', d) = unzip $ map learnPerceptron $ zip perceptron corrections :: ([Perceptron], [[Double]])
       d' = flip foldr1 d $ zipWith (+)
+
+instance Binary Layer where
+  put (Layer p) = put p
+  get = get >>= (\p -> return (Layer p))
 
 data Network = Network [Layer]
   deriving (Show, Eq)
@@ -54,3 +65,7 @@ instance Neural Network where
       i' = proceed n inputs -- input for next layer
       (Network n', c') = learn (Network ns) i' correctAnswerd r -- changed next layers and correction for current layer
       (n'', c'') = learn n inputs c' r -- changed current layer and correction to previous layer
+
+instance Binary Network where
+  put (Network n) = put n
+  get = get >>= (\n -> return (Network n))

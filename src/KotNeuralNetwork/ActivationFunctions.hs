@@ -1,5 +1,6 @@
 module KotNeuralNetwork.ActivationFunctions where
 -- From https://en.wikipedia.org/wiki/Activation_function
+import Data.Binary
 
 data ActivationFunction = ActivationIdentity
                         | ActivationBinary
@@ -73,3 +74,62 @@ getFunction'    (ActivationSoftExponential a) | a < 0 = \x -> 1  / (1 - a * (a +
 getFunction'    (ActivationSinusoid) = cos
 getFunction'    (ActivationSinc) = \x -> if x == 0 then 0 else (cos x) / x - (sin x) / (x**2)
 getFunction' af@(ActivationGaussian) = let f = getFunction af in \x -> (-2) * x * f x
+
+
+instance Binary ActivationFunction where
+  put (ActivationIdentity) = put (1 :: Word8)
+  put (ActivationBinary) = put (2 :: Word8)
+  put (ActivationLogistic) = put (3 :: Word8)
+  put (ActivationTanH) = put (4 :: Word8)
+  put (ActivationArcTan) = put (5 :: Word8)
+  put (ActivationSoftsign) = put (6 :: Word8)
+  put (ActivationReLU) = put (7 :: Word8)
+  put (ActivationLeakyReLU) = put (8 :: Word8)
+  put (ActivationPReLU a) = put (9 :: Word8) >> put a
+  put (ActivationRReLU a) = put (10 :: Word8) >> put a
+  put (ActivationELU a) = do put (11 :: Word8) >> put a
+  put (ActivationSELU) = put (12 :: Word8)
+  put (ActivationSReLU tl al tr ar) = do put (13 :: Word8)
+                                         put tl
+                                         put al
+                                         put tr
+                                         put ar
+  put (ActivationAPL as bs) = put (14 :: Word8) >> put as >> put bs
+  put (ActivationSoftPlus) = put (15 :: Word8)
+  put (ActivationBentIdentity) = put (16 :: Word8)
+  put (ActivationSoftExponential a) = put (17 :: Word8) >> put a
+  put (ActivationSinusoid) = put (18 :: Word8)
+  put (ActivationSinc) = put (19 :: Word8)
+  put (ActivationGaussian) = put (20 :: Word8)
+  -- put (ActivationUnknown _) = put (0 :: Word8) 
+
+  get = do t <- get :: Get Word8
+           case t of
+             -- 0 -> do return (ActivationUnknown (\x->unknown, \x->unknown))
+             1  -> do return (ActivationIdentity)
+             2  -> do return (ActivationBinary)
+             3  -> do return (ActivationLogistic)
+             4  -> do return (ActivationTanH)
+             5  -> do return (ActivationArcTan)
+             6  -> do return (ActivationSoftsign)
+             7  -> do return (ActivationReLU)
+             8  -> do return (ActivationLeakyReLU)
+             9  -> get >>= (\a -> return (ActivationPReLU a))
+             10 -> get >>= (\a -> return (ActivationRReLU a))
+             11 -> get >>= (\a -> return (ActivationELU a))
+             12 -> do return (ActivationSELU)
+             13 -> do tl <- get
+                      al <- get
+                      tr <- get
+                      ar <- get
+                      return (ActivationSReLU tl al tr ar)
+             14 -> do as <- get
+                      bs <- get
+                      return (ActivationAPL as bs)
+             15 -> do return (ActivationSoftPlus)
+             16 -> do return (ActivationBentIdentity)
+             17 -> get >>= (\a -> return (ActivationSoftExponential a))
+             18 -> do return (ActivationSinusoid)
+             19 -> do return (ActivationSinc)
+             20 -> do return (ActivationGaussian)
+             _  -> undefined
