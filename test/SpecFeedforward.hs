@@ -8,7 +8,8 @@ import qualified KotNeuralNetwork.Feedforward as FF
 
 -- testFeedforward :: IO()
 test = do --hspec $ do
-  let aa@(a,a') = AF.activationLogistic
+  let aa = AF.ActivationLogistic
+  let a  = AF.getFunction aa
   describe "Feedforward network:" $ do
     describe "Perceptron tests:" $ do
       let i = [-5, 8, -3]

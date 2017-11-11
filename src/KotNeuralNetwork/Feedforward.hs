@@ -1,24 +1,18 @@
 module KotNeuralNetwork.Feedforward where
 
 import KotNeuralNetwork.Internal
-
-import Data.List
+import qualified KotNeuralNetwork.ActivationFunctions as AF
 
 data Perceptron = Perceptron {
   weigths  :: [Weigth],
-  activation :: (Double -> Double, Double -> Double)
-  }
-
-instance Eq Perceptron where
-  (==) (Perceptron w a) (Perceptron w1 a1) = (w == w1) -- && (a == a1)
-instance Show Perceptron where
-  show (Perceptron w _) = "Perceptron" ++ " with " ++ wText
-    where wText = (++) "weigths: " $ intercalate " " $ map show w
+  activation :: AF.ActivationFunction
+  } deriving (Eq, Show)
 
 instance Neural Perceptron where
-  proceed (Perceptron w (a,_)) inputs = [a . sum $ zipWith (*) inputs w]
-  learn (Perceptron w f@(_,a')) inputs corrections r = (Perceptron w' f, correctionToPreviousLayer)
+  proceed (Perceptron w af) inputs = let a = AF.getFunction af in [a . sum $ zipWith (*) inputs w]
+  learn (Perceptron w af) inputs corrections r = (Perceptron w' af, correctionToPreviousLayer)
     where
+      a' = AF.getFunction' af
       dE_dout = sum corrections
       net = sum $ zipWith (*) inputs w
       dout_dnet = a' net
