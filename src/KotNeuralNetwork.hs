@@ -9,4 +9,4 @@ module KotNeuralNetwork
 import KotNeuralNetwork.Internal
 import qualified KotNeuralNetwork.Feedforward
 
-type KotFeedforwardNeuralNetwork = KotNeuralNetwork.Feedforward.NeuralNetwork
+type KotFeedforwardNeuralNetwork = KotNeuralNetwork.Feedforward.Network
